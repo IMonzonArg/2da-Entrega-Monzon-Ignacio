@@ -1,0 +1,22 @@
+nav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Asegura que el nav ocupe el 100% del ancho disponible */
+    height: auto;
+    margin-top: 1%;
+    border-bottom: 3px solid #000000; /* Agrega un borde inferior */
+}
+
+h3 {
+    font-size: 30px;
+    margin-top: 1%;
+}
+
+.navbarButtons{
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    box-shadow: white;
+    font-size: 20px;
+}
+
