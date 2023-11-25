@@ -1,8 +1,47 @@
-import React from 'react'
-import ItemCount from '../ItemCount/ItemCount'
-import './itemDetail.css'
+import React, { useState, useContext, useEffect } from 'react';
+import ItemCount from '../ItemCount/ItemCount';
+import { Link } from 'react-router-dom';
+import './itemDetail.css';
+import { CartContext } from '../../components/context/CartContext';
+import { doc, getDoc } from 'firebase/firestore';
+import db from '../Firebase/firebaseconfig';
 
-const ItemDetail = ({ id, nombre, tipo, precio, stock, imagen, graduacion, origen }) => {
+const ItemDetail = ({ id, nombre, tipo, precio, stock, imagen }) => {
+  const [quantityAdded, setQuantityAdded] = useState(0);
+  const { addItem } = useContext(CartContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const docRef = doc(db, 'products', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          // Use docSnap.data() to access the document data
+          const data = docSnap.data();
+          console.log('Document data:', data);
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching document:', error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleOnAdd = (quantity) => {
+    setQuantityAdded(quantity);
+
+    const item = {
+      id,
+      nombre,
+      precio,
+    };
+
+    addItem(item, quantity);
+  };
+
   return (
     <article className='CardItem'>
       <header className='Header'>
@@ -23,18 +62,18 @@ const ItemDetail = ({ id, nombre, tipo, precio, stock, imagen, graduacion, orige
         <p className='Tipo'>
           Tipo: {tipo}
         </p>
-        <p className='Info'>
-          Graduación alcohólica: {graduacion}
-        </p>
-        <p className='Info'>
-          Origen: {origen}
-        </p>
       </section>
       <footer className='ItemFooter'>
-        <ItemCount initial={1} stock={stock} onAdd={(quantity) => console.log('Cantidad agregada', quantity)} />
+        {
+          quantityAdded > 0 ? (
+            <Link to='/cart' className='Option'>Terminar compra</Link>
+          ) : (
+            <ItemCount initial={1} stock={stock} onAdd={handleOnAdd} />
+          )
+        }
       </footer>
     </article>
-  )
-}
+  );
+};
 
-export default ItemDetail
+export default ItemDetail;
